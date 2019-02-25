@@ -1,5 +1,10 @@
-import firebase from "firebase";
-require("firebase/firestore");
+// import firebase from "firebase";
+import firebase from 'firebase/app';
+ 
+// These imports load individual services into the firebase namespace.
+import 'firebase/auth';
+import 'firebase/firestore';
+// require("firebase/firestore");
 
 var config = {
   apiKey: "AIzaSyDrgbBpmVrw3qsptpH8dTgf8zQoLFIVO_I",
@@ -10,8 +15,7 @@ var config = {
   messagingSenderId: "417960454345"
 };
 firebase.initializeApp(config);
-const db = firebase.firestore();
-// db.settings({ timestampsInSnapshots: true });
+// const db = firebase.firestore();
 
-// export default firebase;
-export default db;
+export default firebase;
+// export default db;

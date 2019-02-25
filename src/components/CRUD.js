@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import firebase from "firebase";
+// import firebase from "firebase";
 // import db from "./Firebase";
-// import firebase from "./Firebase";
-import db from './Firebase'
+import firebase from "./Firebase";
+// import db from './Firebase'
+var db = firebase.firestore();
 
 export default class CRUD extends Component {
   constructor() {
@@ -43,13 +44,13 @@ export default class CRUD extends Component {
     addUser = e => {
     e.preventDefault();
     const timeNow = firebase.firestore.Timestamp.now();
-    // db.collection("unverifiedUsers")
-    //     .where("email", "==", this.state.email.toLowerCase())
-    //     .get()
-    //     .then(
-    //     function(querySnapshot) {
-    //         if (querySnapshot.empty) {
-    //         //there is no doc found so adding new doc
+    db.collection("unverifiedUsers")
+        .where("email", "==", this.state.email.toLowerCase())
+        .get()
+        .then(
+        function(querySnapshot) {
+            if (querySnapshot.empty) {
+            //there is no doc found so adding new doc
             var refAddDoc = db.collection("unverifiedUsers").doc();
             refAddDoc.set({
                 docId: refAddDoc.id,
@@ -58,28 +59,28 @@ export default class CRUD extends Component {
                 createdAt: timeNow,
                 updatedAt: timeNow
             });
-            // } else {
-            // // there is a doc already in DB
-            // var docId = querySnapshot.docs.map(function(documentSnapshot) {
-            //     return documentSnapshot.data().docId;
-            // });
-            // //passing docid to collection to update doc
-            // db.collection("unverifiedUsers")
-            //     .doc(docId[0]) //
-            //     .update({
-            //     fullname: this.state.fullname,
-            //     updatedAt: timeNow
-            //     })
-            //     .catch(function(error) {
-            //     // The document probably doesn't exist.
-            //     console.error("Error updating document: ", error);
-            //     });
-            // }
+            } else {
+            // there is a doc already in DB
+            var docId = querySnapshot.docs.map(function(documentSnapshot) {
+                return documentSnapshot.data().docId;
+            });
+            //passing docid to collection to update doc
+            db.collection("unverifiedUsers")
+                .doc(docId[0]) //
+                .update({
+                fullname: this.state.fullname,
+                updatedAt: timeNow
+                })
+                .catch(function(error) {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+                });
+            }
             this.setState({
             fullname: "",
             email: ""
-            // });
-        }
+            });
+        }.bind(this)
         );
     };
     
