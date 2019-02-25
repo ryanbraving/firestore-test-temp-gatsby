@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 // require("firebase/firestore");
+global.XMLHttpRequest = require("xhr2");
 
 var config = {
   apiKey: "AIzaSyDrgbBpmVrw3qsptpH8dTgf8zQoLFIVO_I",
