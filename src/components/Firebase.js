@@ -1,11 +1,11 @@
 // import firebase from "firebase";
-import firebase from 'firebase/app';
- 
+import firebase from "firebase/app"
+
 // These imports load individual services into the firebase namespace.
-import 'firebase/auth';
-import 'firebase/firestore';
+import "firebase/auth"
+import "firebase/firestore"
 // require("firebase/firestore");
-global.XMLHttpRequest = require("xhr2");
+global.XMLHttpRequest = require("xhr2")
 
 var config = {
   apiKey: "AIzaSyDrgbBpmVrw3qsptpH8dTgf8zQoLFIVO_I",
@@ -13,10 +13,13 @@ var config = {
   databaseURL: "https://polling-app-gatsby.firebaseio.com",
   projectId: "polling-app-gatsby",
   storageBucket: "polling-app-gatsby.appspot.com",
-  messagingSenderId: "417960454345"
-};
-firebase.initializeApp(config);
+  messagingSenderId: "417960454345",
+}
+firebase.initializeApp(config)
+// firebase.firestore.settings({
+//   timestampsInSnapshots: false,
+// })
 // const db = firebase.firestore();
 
-export default firebase;
+export default firebase
 // export default db;

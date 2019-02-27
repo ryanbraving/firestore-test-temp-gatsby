@@ -1,89 +1,88 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 // import firebase from "firebase";
 // import db from "./Firebase";
-import firebase from "./Firebase";
+import firebase from "./Firebase"
 // import db from './Firebase'
-var db = firebase.firestore();
+
+import { timeDifferenceForDate } from "./TimeDiff"
+var db = firebase.firestore()
 
 export default class CRUD extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
-        email: "",
-        fullname: "",
-        messages: []
-    };
+      email: "",
+      fullname: "",
+      messages: [],
+    }
   }
-    
-    componentWillMount() {
-    db.collection("unverifiedUsers").orderBy("createdAt", "desc")
-    .onSnapshot(collection => {
-        const messages = collection.docs.map(doc => doc.data());
-        this.setState({ messages: messages });
-        // let changes = collection.docChanges();
+
+  componentWillMount() {
+    db.collection("unverifiedUsers")
+      // db.collection("unverifiedUsers").orderBy("createdAt", "desc")
+      .onSnapshot(collection => {
+        const messages = collection.docs.map(doc => doc.data())
+        this.setState({ messages: messages })
+        // let changes = collection.docChanges()
         // console.log(changes);
         // changes.forEach(change => {
         // console.log(change.doc.data());
         // if (change.type === "added") {
-        //     console.log("document has added", change.doc.id);
+        //   console.log("document has added", change.doc.id)
         // } else if (change.type === "removed") {
-        //     console.log("document has removed", change.doc.id);
+        //   console.log("document has removed", change.doc.id)
         // } else if (change.type === "modified") {
-        //     console.log("document has updated", change.doc.id);
+        //   console.log("document has updated", change.doc.id)
         // }
-        // });
-    });
-    }
-    
-    updateInput = e => {
+        // })
+      })
+  }
+
+  updateInput = e => {
     this.setState({
-        [e.target.name]: e.target.value
-    });
-    };
-    
-    addUser = e => {
-    e.preventDefault();
-    const timeNow = firebase.firestore.Timestamp.now();
-    db.collection("unverifiedUsers")
-        .where("email", "==", this.state.email.toLowerCase())
-        .get()
-        .then(
-        function(querySnapshot) {
-            if (querySnapshot.empty) {
-            //there is no doc found so adding new doc
-            var refAddDoc = db.collection("unverifiedUsers").doc();
-            refAddDoc.set({
-                docId: refAddDoc.id,
-                fullname: this.state.fullname,
-                email: this.state.email.toLowerCase(),
-                createdAt: timeNow,
-                updatedAt: timeNow
-            });
-            } else {
-            // there is a doc already in DB
-            var docId = querySnapshot.docs.map(function(documentSnapshot) {
-                return documentSnapshot.data().docId;
-            });
-            //passing docid to collection to update doc
-            db.collection("unverifiedUsers")
-                .doc(docId[0]) //
-                .update({
-                fullname: this.state.fullname,
-                updatedAt: timeNow
-                })
-                .catch(function(error) {
-                // The document probably doesn't exist.
-                console.error("Error updating document: ", error);
-                });
-            }
-            this.setState({
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  addUser = e => {
+    e.preventDefault()
+    // const timeNow = firebase.firestore.Timestamp.now()
+    const timeNow = firebase.firestore.FieldValue.serverTimestamp()
+
+    var refAddDoc = db
+      .collection("unverifiedUsers")
+      .doc(this.state.email.toLowerCase())
+    refAddDoc
+      .update({
+        updatedAt: timeNow,
+      })
+      .then(
+        function() {
+          // console.log("Document successfully updated!");
+          this.setState({
             fullname: "",
-            email: ""
-            });
+            email: "",
+          })
         }.bind(this)
-        );
-    };
-    
+      )
+      .catch(
+        function(error) {
+          // The document probably doesn't exist.
+          // console.error("Error updating document: ", error);
+          refAddDoc.set({
+            docId: refAddDoc.id,
+            fullname: this.state.fullname,
+            // email: this.state.email.toLowerCase(),
+            createdAt: timeNow,
+            // updatedAt: timeNow,
+          })
+          this.setState({
+            fullname: "",
+            email: "",
+          })
+        }.bind(this)
+      )
+  }
 
   render() {
     return (
@@ -110,7 +109,7 @@ export default class CRUD extends Component {
         <ul>
           {this.state.messages.map((message, index) => (
             <li key={index}>
-              {message.email}
+              {message.docId}{" "}
               <button
                 onClick={() =>
                   db
@@ -120,7 +119,15 @@ export default class CRUD extends Component {
                 }
               >
                 Delete Me
-              </button>
+              </button>{" "}
+              <b>Created:</b>{" "}
+              {message.createdAt
+                ? timeDifferenceForDate(message.createdAt.toDate())
+                : null}{" "}
+              {message.updatedAt ? <b>Updated: </b> : null}
+              {message.updatedAt
+                ? timeDifferenceForDate(message.updatedAt.toDate())
+                : null}
             </li>
           ))}
         </ul>
