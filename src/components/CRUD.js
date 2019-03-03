@@ -12,7 +12,7 @@ export default class CRUD extends Component {
     super()
     this.state = {
       email: "",
-      fullname: "",
+      name: "",
       messages: [],
     }
   }
@@ -46,12 +46,18 @@ export default class CRUD extends Component {
 
   addUser = e => {
     e.preventDefault()
+    const dbName = this.state.name
+    const dbEmail = this.state.email
+    this.setState({
+      name: "",
+      email: "",
+    })
     // const timeNow = firebase.firestore.Timestamp.now()
     const timeNow = firebase.firestore.FieldValue.serverTimestamp()
 
     var refAddDoc = db
       .collection("unverifiedUsers")
-      .doc(this.state.email.toLowerCase())
+      .doc(dbEmail.toLowerCase())
     refAddDoc
       .update({
         updatedAt: timeNow,
@@ -59,11 +65,8 @@ export default class CRUD extends Component {
       .then(
         function() {
           // console.log("Document successfully updated!");
-          this.setState({
-            fullname: "",
-            email: "",
-          })
-        }.bind(this)
+         
+        }
       )
       .catch(
         function(error) {
@@ -71,16 +74,12 @@ export default class CRUD extends Component {
           // console.error("Error updating document: ", error);
           refAddDoc.set({
             docId: refAddDoc.id,
-            fullname: this.state.fullname,
+            name: dbName,
             // email: this.state.email.toLowerCase(),
             createdAt: timeNow,
             // updatedAt: timeNow,
           })
-          this.setState({
-            fullname: "",
-            email: "",
-          })
-        }.bind(this)
+        }
       )
   }
 
@@ -90,10 +89,10 @@ export default class CRUD extends Component {
         <form onSubmit={this.addUser}>
           <input
             type="text"
-            name="fullname"
+            name="name"
             placeholder="Full name"
             onChange={this.updateInput}
-            value={this.state.fullname}
+            value={this.state.name}
             required
           />
           <input
